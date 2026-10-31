@@ -1,0 +1,37 @@
+services:
+  video-converter:
+    build: .
+    restart: unless-stopped
+    init: true
+    expose:
+      - "8000"
+    environment:
+      APP_USER: ${APP_USER:-admin}
+      APP_PASSWORD: ${APP_PASSWORD:?Set APP_PASSWORD in Coolify environment variables}
+      RCLONE_CONFIG: /config/rclone.conf
+      INPUT_REMOTE: gdrive:VideoConverter/Input
+      OUTPUT_REMOTE: gdrive:VideoConverter/Converted
+      MOUNT_PATH: /gdrive
+      WORK_DIR: /work/output
+      CACHE_DIR: /cache/rclone
+    devices:
+      - /dev/fuse:/dev/fuse
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - rclone-config:/config
+      - video-work:/work
+      - video-cache:/cache
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  rclone-config:
+  video-work:
+  video-cache:
