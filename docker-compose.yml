@@ -21,7 +21,7 @@ services:
     security_opt:
       - apparmor:unconfined
     volumes:
-      - rclone-config:/config
+      - rclone-config:/config:ro
       - video-work:/work
       - video-cache:/cache
     healthcheck:
@@ -33,5 +33,7 @@ services:
 
 volumes:
   rclone-config:
+    external: true
+    name: ${RCLONE_CONFIG_VOLUME}
   video-work:
   video-cache:
