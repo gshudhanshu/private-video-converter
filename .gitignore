@@ -1,0 +1,8 @@
+.env
+.env.*
+!.env.example
+
+rclone.conf
+/config/
+*.token
+secrets/
